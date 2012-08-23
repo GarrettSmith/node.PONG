@@ -1,17 +1,17 @@
 $(function () {
 	"use strict";
 
-	var shared = require('../../shared/js/shared');
 
 	var canvas = $('#canavs');
 
     // if user is running mozilla then use it's built-in WebSocket
     window.WebSocket = window.WebSocket || window.MozWebSocket;
 
-    var connection = new WebSocket('ws://127.0.0.1:' + shared.port);
+    var connection = new WebSocket('ws://127.0.0.1:' + 8080);
 
     connection.onopen = function () {
         // connection is opened and ready to use
+        console.log("Connection Established");
     };
 
     connection.onerror = function (error) {
@@ -19,13 +19,7 @@ $(function () {
     };
 
     connection.onmessage = function (message) {
-        // try to decode json (I assume that each message from server is json)
-        try {
-            var json = JSON.parse(message.data);
-        } catch (e) {
-            console.log('This doesn\'t look like a valid JSON: ', message.data);
-            return;
-        }
         // handle incoming message
+        console.log(message.data);
     };
 });

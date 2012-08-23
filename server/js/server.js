@@ -3,36 +3,12 @@ var shared = require('../../shared/js/shared');
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-var fs = require('fs');
+var _ = require('underscore');
 
 var infoPath = "/info";
 
 var server = http.createServer(function(request, response) {
-    // process HTTP request. Since we're writing just WebSockets server
-
-    // return info page
-    if (request.url === infoPath ) {
-	    console.log("Info page requested");
-    }
-    // return main page
-    else if (request.url === "/") {
-        console.log("Main page requested");
-        fs.readFile(__dirname + '/page.html', function(err, data) {
-            // if we failed to load the html file
-            if (err) {
-                response.writeHead(500);
-                return response.end('Error loading page.html');
-            }
-            else {
-                response.writeHead(200);
-                response.end(data);
-            }
-        });
-    }
-    else {
-       response.writeHead(404);
-       response.end();
-    }
+    // process HTTP request. Since we're writing just WebSockets server do nothing
 });
 server.listen(shared.port, function() { });
 
@@ -41,9 +17,14 @@ var wsServer = new WebSocketServer({
 	httpServer: server
 });
 
+var connections = [];
+
 // WebSocket server
 wsServer.on('request', function(request) {
 	var connection = request.accept(null, request.origin);
+    console.info(request.origin + " connected");
+    console.dir(request);
+    connections.push(connection);
 
     // This is the most important callback for us, we'll handle
     // all messages from users here.
@@ -52,8 +33,18 @@ wsServer.on('request', function(request) {
 	});
 
     connection.on('close', function(connection) {
-        // TODO: close user connection
+        // close user connection
+        connections.pop(connection);
+        console.info(request.origin + " disconnected");
     });
 });
+
+function bugger () {
+    _.each(connections, function (con) {
+        con.sendUTF("Hey!");
+    });
+}
+
+setInterval(bugger, 1000);
 
 console.log("Listening on localhost:" + shared.port);
