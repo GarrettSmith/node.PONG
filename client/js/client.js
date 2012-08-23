@@ -1,7 +1,7 @@
 $(function () {
 	"use strict";
 
-	var shared = require('./shared');
+	var shared = require('../../shared/js/shared');
 
 	var canvas = $('#canavs');
 

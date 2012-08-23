@@ -1,5 +1,5 @@
 "use strict";
-var shared = require('./shared');
+var shared = require('../../shared/js/shared');
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
