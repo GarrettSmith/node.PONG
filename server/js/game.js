@@ -1,5 +1,10 @@
 var EventEmitter = require('events').EventEmitter;
 var util = require('./util');
+var _ = require('underscore');
+
+// the default fps to run at
+var defaultFps = 1000 / 60; // 60 fps
+exports.defaultFps = defaultFps;
 
 // Returns a new game object.
 exports.createGame = function(tickListener) {
@@ -22,34 +27,32 @@ exports.createGame = function(tickListener) {
     // the number of ticks since start
     var currentFrame = 0;
 
-    // register the tick listener if one was given
-    if (typeof tickListener !== undefined ) {
+    // register the given arguements as tick listeners
+    _.each(arguments, function(tickListener) {
         game.on('tick', tickListener);
-    }
+    });
 
     // emit a tick event and maintain time variables
     var tick = function() {
         // increment the frame count
         currentFrame += 1;
+        var currentTime = currentGameTime();
         // the time since last ticke
-        var deltaTime = currentGameTime() - lastTickTime;
+        var deltaTime = currentTime - lastTickTime;
         // record this as the last time ticked
-        lastTickTime = currentGameTime();
+        lastTickTime = currentTime;
         // emit the event
-        game.emit('tick', deltaTime);
+        game.emit('tick', deltaTime, currentTime, currentFrame);
     };
 
     // start running the game loop
     game.start = function(tickRate) {
-        // use the given tick rate or 60 fps
-        tickRate = util.optional(tickRate, 1000 / 60);
-
+        // use the given tick rate or the default speed
+        tickRate = util.optional(tickRate, defaultFps);
         // record the start time
         startTime = Date.now();
-
         // this ticks at the tick rate firing tick events to run the game loop
         ticker = setInterval(tick, tickRate);
-
         // emit a start event
         game.emit('start');
     };
@@ -58,7 +61,6 @@ exports.createGame = function(tickListener) {
     game.stop = function() {
         // stop the game loop
         clearInterval(ticker);
-
         // emit a stop event
         game.emit('stop');
     };

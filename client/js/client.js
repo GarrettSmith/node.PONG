@@ -1,5 +1,18 @@
 $(function () {
 
+    // convert milliseconds into a D:H:M:S string
+    function formatMillis(millis) {
+        millis /= 1000;
+        var s = Math.floor(millis % 60);
+        millis /= 60;
+        var m = Math.floor(millis % 60);
+        millis /= 60;
+        var h = Math.floor(millis % 24);
+        millis /= 24;
+        var d = Math.floor(millis);
+        return ("" + d + ':' + h + ':' + m + ':' + s);
+    }
+
 	var canvas = $('#canavs');
 
     // if user is running mozilla then use it's built-in WebSocket
@@ -15,9 +28,17 @@ $(function () {
 
     connection.onerror = function (error) {
         // an error occurred when sending/receiving data
+        console.error(error);
     };
 
     connection.onmessage = function (message) {
         // handle incoming message
+        message = JSON.parse(message.data);//BISON.decode(message.data);
+        // console.log(message);
+
+       // update debug elements
+       $('#time').text(formatMillis(message.time));
+       $('#frame').text(message.frame.toString());
+       $('#fps').text(message.fps.toString());
     };
 });

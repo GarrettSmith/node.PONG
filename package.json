@@ -6,7 +6,7 @@
     "websocket": "*",
     "websocket-server": "*",
     "underscore": "*",
-    "connect": "*"
+    "bison": "*"
   },
   "license": "MIT"
 }
