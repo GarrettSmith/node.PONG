@@ -5,12 +5,36 @@ html {
 body {
 	margin: 0;
 	padding: 0;
-	border-top: 10px solid hsl(0, 50%, 50%);
-	background: -webkit-gradient(linear, left top, left bottom, from(white), to(hsl(0, 0%, 90%))) bottom no-repeat ;
 }
 
-#canvas-frame {
+.canvas-frame {
 	margin: 30px auto;
 	width: 1000px;
 	height: 600px;
+    border: 2px solid grey;
+}
+
+.debug {
+    border-bottom: 1px dashed grey;
+    margin: 0;
+    height: 16px;
+    padding: 2px 0 2px 0;
+}
+
+.debug ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.debug li {
+    display: block;
+    float: left;
+    padding-left: 6px;
+    font-size: 10pt;
+}
+
+.debug li span {
+    background: lightgrey;
+    padding: 0 4px 0 4px;
 }

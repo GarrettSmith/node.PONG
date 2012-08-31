@@ -28,9 +28,11 @@ exports.createGame = function(tickListener) {
     var currentFrame = 0;
 
     // register the given arguements as tick listeners
-    _.each(arguments, function(tickListener) {
-        game.on('tick', tickListener);
-    });
+    if (typeof tickListener !== 'undefined') {
+        _.each(arguments, function(tickListener) {
+            game.on('tick', tickListener);
+        });
+    }
 
     // emit a tick event and maintain time variables
     var tick = function() {
