@@ -1,10 +1,12 @@
 var game = require('./game');
 
 var bounceSpeedMultiplier = 1.1;
+var bounceAngleScale = 0.3;
 
-var paddleSidePadding = 12;
+var paddleSidePadding = 20;
 
-var maxSpeed = 400;
+var maxSpeed = 300;
+var maxPaddleSpeed = 400;
 
 var edges = [
     "top",
@@ -68,14 +70,19 @@ exports.createGame = function(tickListeners) {
     pong.rightPaddle.x = bounds.width - paddleSidePadding - pong.rightPaddle.width;
 
     pong.input = {
-        leftUp: false,
-        leftDown: false,
-        rightUp: false,
-        rightDown: false
+        1: {
+            up: 0,
+            down: 0
+        },
+        2: {
+            up: 0,
+            down: 0
+        }
     };
 
-    function handleInput(action, status) {
-        pong.input[action] = (status === 'keydown');
+    function handleInput(action, status, team) {
+        var delta = (status === 'keyup' ? -1 : 1);
+        pong.input[team][action] += delta;
     }
 
     pong.on('input', handleInput);
@@ -137,27 +144,51 @@ exports.createGame = function(tickListeners) {
     function bouncePaddle() {
         if (checkCollision(pong.leftPaddle, pong.ball)) {
             pong.ball.dx *= -bounceSpeedMultiplier;
+            pong.ball.dy += pong.leftPaddle.dy * bounceAngleScale;
             pong.emit('hitPaddle', pong.leftPaddle);
         }
         else if (checkCollision(pong.rightPaddle, pong.ball)) {
             pong.ball.dx *= -bounceSpeedMultiplier;
+            pong.ball.dy += pong.rightPaddle.dy * bounceAngleScale;
             pong.emit('hitPaddle', pong.rightPaddle);
         }
     }
 
-    var paddleSpeed = 400;
+    function calculateDeltas() {
+        //set dy from input
+        var up = pong.input[1].up;
+        var down = pong.input[1].down;
+        pong.leftPaddle.dy = calcDelta(up, down);
+
+        up = pong.input[2].up;
+        down = pong.input[2].down;
+        pong.rightPaddle.dy = calcDelta(up, down);
+    }
+
+    function calcDelta(up, down) {
+        var min = Math.min(up, down);
+        var max = Math.max(up, down);
+        var delta = (up > down ? -1 : 1); // up or down?
+        //delta *= max / (max + min); // ratio
+        delta *= (max === 0 ? 0 : 1); // don't move if no votes
+        delta *= (max === min ? 0 : 1); // if a tie don't move
+        delta *= maxPaddleSpeed;
+        return delta;
+    }
 
     function movePaddles(deltaTime) {
-        //set dy from input
-        pong.leftPaddle.dy = pong.input.leftUp ? -paddleSpeed : 0;
-        pong.leftPaddle.dy += pong.input.leftDown ? paddleSpeed : 0;
-
-        pong.rightPaddle.dy = pong.input.rightUp ? -paddleSpeed : 0;
-        pong.rightPaddle.dy += pong.input.rightDown ? paddleSpeed : 0;
-
         pong.leftPaddle.y += (pong.leftPaddle.dy * deltaTime / 1000);
         pong.rightPaddle.y += (pong.rightPaddle.dy * deltaTime / 1000);
-    };
+
+        //TODO constrain
+        constrain(pong.leftPaddle);
+        constrain(pong.rightPaddle);
+    }
+
+    function constrain(paddle) {
+        paddle.y = Math.max(paddle.y, 0);
+        paddle.y = Math.min(paddle.y, pong.bounds.height - paddle.height);
+    }
 
     pong.scores = {
         left: 0,
@@ -184,6 +215,7 @@ exports.createGame = function(tickListeners) {
     pong.on('score', increaseScore);
 
     pong.on('tick', checkForScore);
+    pong.on('tick', calculateDeltas);
     pong.on('tick', movePaddles);
     pong.on('tick', moveBall);
     pong.on('tick', bounceBall);

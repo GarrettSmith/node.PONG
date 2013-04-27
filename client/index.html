@@ -11,11 +11,34 @@
             <li>Game Time: <span id="time"></span></li>
             <li>Frame: <span id="frame"></span></li>
             <li>Game FPS: <span id="fps"></span></li>
+            <li>Easing: <input type="checkbox" id="easing" /></li>
         </ul>
     </div>
-	<div class="canvas-frame">
-		<canvas id="canvas" width="1000" height="600"></canvas>
-	</div>
+    <div id="main">
+        <div id="team-select">
+            <input type="button" id="button-1" value="Join Team Red!" />
+            <input type="button" id="button-2" value="Join Team Blue!" />
+            <p> Join a team to get in on the action!</p>
+        </div>
+        <div class ="votes-box" id="votes-box-red">
+            <div class="votes" id="red-up-votes">0</div>
+            <div class="arrow" id="red-up-arrow">△</div>
+            <hr/>
+            <div class="arrow" id="red-down-arrow">▽</div>
+            <div class="votes" id="red-down-votes">0</div>
+        </div>
+        <div class ="votes-box" id="votes-box-blue">
+            <div class="votes" id="blue-up-votes">0</div>
+            <div class="arrow" id="blue-up-arrow">△</div>
+            <hr/>
+            <div class="arrow" id="blue-down-arrow">▽</div>
+            <div class="votes" id="blue-down-votes">0</div>
+        </div>
+        <div class="canvas-frame">
+            <canvas id="canvas" width="1000" height="600"></canvas>
+        </div>
+        <h1>Node.PONG!</h1>
+    </div>
     <script type="text/javascript" src="lib/ender.min.js"></script>
 	<script type="text/javascript" src="js/client.js"></script>
 </body>

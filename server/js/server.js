@@ -1,12 +1,12 @@
 var shared = require('../../shared/js/shared');
 
 var WebSocketServer = require('websocket').server;
-var connect = require('connect');
 var http = require('http');
 var _ = require('underscore');
-var bison = require('bison');
+//var bison = require('bison');
 var repl = require('repl');
 var net = require('net');
+var static = require('node-static');
 
 var game;
 
@@ -15,7 +15,7 @@ function startGame() {
 
     var lastNotify = 0;
     var lastFrame = 0;
-    var notifyRate = 10;
+    var notifyRate = 60;
 
     // notify clients of the current state
     var clientNotifier = function(deltaTime, currentTime, currentFrame) {
@@ -38,11 +38,12 @@ function startGame() {
                 ball: game.ball,
                 leftPaddle: game.leftPaddle,
                 rightPaddle: game.rightPaddle,
-                scores: game.scores
+                scores: game.scores,
+                input: game.input
             };
 
             // encode the message
-            var message = JSON.stringify(state);//bison.encode(state);
+            var message = JSON.stringify(state); //bison.encode(state); //
             // console.log(message);
 
             // send the state to each connection
@@ -70,11 +71,17 @@ var restart = function() {
 
 startGame();
 
-var server = http.createServer().listen(shared.port);
+var file = new(static.Server)('../../client');
+
+var webServer = http.createServer(function(request, response) {
+    file.serve(request, response);
+}).listen(shared.http_port);
+
+var socketServer = http.createServer().listen(shared.socket_port);
 
 // create the server
 var wsServer = new WebSocketServer({
-	httpServer: server
+	httpServer: socketServer
 });
 
 var connections = [];
@@ -91,7 +98,7 @@ wsServer.on('request', function(request) {
     connection.on('message', function(message) {
 		// recieve message
         message = JSON.parse(message.utf8Data);
-        game.emit('input', message.action, message.status);
+        handleMessage(message, connection);
 	});
 
     connection.on('close', function(connection) {
@@ -101,9 +108,29 @@ wsServer.on('request', function(request) {
     });
 });
 
-// setTimeout(function(){game.stop();}, 500);
+function handleMessage(message, connection) {
+    switch(message.type) {
+        case 'input':
+            handleInput(message, connection);
+            break;
+        case 'join':
+            handleJoin(message, connection);
+            break;
+    }
+}
 
-console.log("Game server listening on port " + shared.port);
+function handleJoin(message, connection) {
+    connection.team = message.team;
+}
+
+function handleInput(message, connection) {
+    if (connection.team) {
+        game.emit('input', message.action, message.status, connection.team);
+    }
+}
+
+console.log("Game server listening on port " + shared.socket_port);
+console.log("Http server listening on port " + shared.http_port);
 
 // create a remote repl
 net.createServer(function(socket) {
@@ -114,9 +141,9 @@ net.createServer(function(socket) {
     remote.context.game = function() {
         return game;
     };
-}).listen(5001, "localhost");
+}).listen(shared.repl_port, "localhost");
 
-console.log("Remote REPL listening on port 5001");
+console.log("Remote REPL listening on port " + shared.repl_port);
 
 // start a local REPL
 var local = repl.start("node.PONG! > ");
@@ -124,6 +151,8 @@ var local = repl.start("node.PONG! > ");
 local.context.game = function() {
     return game;
 };
+
+local.context.connections = connections;
 
 // restart the game
 local.context.restart = restart;

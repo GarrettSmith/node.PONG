@@ -5,20 +5,45 @@ html {
 body {
 	margin: 0;
 	padding: 0;
+    background: rgb(238,238,238); /* Old browsers */
+    background: -moz-linear-gradient(top,  rgba(238,238,238,1) 0%, rgba(204,204,204,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(238,238,238,1)), color-stop(100%,rgba(204,204,204,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(238,238,238,1) 0%,rgba(204,204,204,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */
 }
 
 .canvas-frame {
-	margin: 30px auto;
+	margin: 80px auto 0 auto;
 	width: 1000px;
 	height: 600px;
-    border: 2px solid grey;
+    background: #333;
+    box-shadow: inset 0 2px 12px 6px #111;
+    border: 1px solid rgba(255,255,255,0.95);
+}
+
+h1 {
+    margin: 20px auto 0 auto;
+    color: #555;
+    text-shadow: 0 -2px black, 0 1px white;
+    display: block;
+    width: 150px;
+    font-family: monospace;
+    font-weight: bold;
 }
 
 .debug {
-    border-bottom: 1px dashed grey;
     margin: 0;
-    height: 16px;
-    padding: 2px 0 2px 0;
+    padding: 4px 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    font-weight: bold;
+    font-family: monospace;
 }
 
 .debug ul {
@@ -35,6 +60,123 @@ body {
 }
 
 .debug li span {
-    background: lightgrey;
+    background: black;
     padding: 0 4px 0 4px;
+    margin-right: 12px;
+}
+
+.debug input[type="checkbox"] {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+}
+
+#team-select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px;
+    background: rgba(0,0,0,0.7);
+}
+
+#team-select p {
+    color: white;
+    margin: 0 auto;
+    display: block;
+    padding: 4px 0 0 0;
+    font-weight: bolder;
+    width: 300px;
+}
+
+#team-select input {
+    display: block;
+    padding: 5px 10px;
+    margin: 0;
+    border-radius: 20px;
+    border: 2px solid white;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 -1px rgba(0,0,0,0.8);
+    background: none;
+    text-shadow: 0 1px hsla(0, 0%, 0%, 0.9);
+}
+
+#team-select input:hover {
+    cursor: pointer;
+}
+
+#button-1{
+    float: left;
+}
+
+#button-2 {
+    float: right;
+}
+
+#button-1:hover {
+    color: #FF6464;
+    border-color: #FF6464;
+    text-shadow: 0 0 8px #FF6464;
+    box-shadow: 0 0 6px #FF6464;
+}
+
+#button-2:hover {
+    color: #64EAFF;
+    border-color: #64EAFF;
+    text-shadow: 0 0 8px #64EAFF;
+    box-shadow: 0 0 6px #64EAFF;
+}
+
+.votes-box {
+    width: 100px;
+    background: rgba(0,0,0,0.75);
+    padding: 10px;
+    margin-top: 150px;
+}
+
+.votes-box hr {
+    border: none;
+    border-top: 2px solid white;
+    border-bottom: 2px solid black;
+}
+
+.votes {
+    height: 40px;
+    background: rgba(255,255,255,0.3);
+    color: white;
+    text-shadow: 0 2px black;
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.votes:after {
+    content: '%';
+}
+
+.arrow {
+    color: rgba(255,255,255,0.3);
+    font-size: 72px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#votes-box-red {
+    float:left;
+}
+
+#votes-box-blue {
+    float:right;
+}
+
+#votes-box-red .active {
+    color: #FF6464;
+    text-shadow: 0 0 12px #FF6464;
+}
+
+#votes-box-blue .active {
+    color: #64EAFF;
+    text-shadow: 0 0 12px #64EAFF;
 }
